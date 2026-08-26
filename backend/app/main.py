@@ -3,6 +3,7 @@ import sys
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.artifacts import router as artifacts_router
 from app.api.routes.config import router as config_router
@@ -35,6 +36,16 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
+
+# Frontend runs in the browser on its own origin (localhost:5173) and calls
+# this API on localhost:8000 — a cross-origin request, unlike every prior
+# test in this project so far (curl/PowerShell aren't subject to CORS).
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 register_exception_handlers(app)
 

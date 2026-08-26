@@ -8,7 +8,7 @@ from app.core.errors import AppError
 from app.db.models import Artifact, Message, Session
 from app.db.session import get_db
 from app.schemas.message import MessageCreate, MessageOut
-from app.schemas.session import SessionCreate, SessionDetailOut, SessionOut
+from app.schemas.session import SessionCreate, SessionDetailOut, SessionOut, SessionSummaryOut
 
 router = APIRouter()
 
@@ -47,6 +47,24 @@ def create_session(payload: SessionCreate, db: DBSession = Depends(get_db)) -> S
     db.commit()
     db.refresh(session)
     return _to_session_out(session)
+
+
+@router.get("/sessions", response_model=list[SessionSummaryOut])
+def list_sessions(db: DBSession = Depends(get_db)) -> list[SessionSummaryOut]:
+    """Added Phase 6 for the session sidebar (design.md §2) — see
+    schemas/session.py's SessionSummaryOut docstring."""
+    sessions = db.query(Session).order_by(Session.created_at.desc()).all()
+    summaries = []
+    for session in sessions:
+        first_user_message = next((m for m in session.messages if m.role == "user"), None)
+        preview = first_user_message.content[:120] if first_user_message else None
+        summaries.append(
+            SessionSummaryOut(
+                **_to_session_out(session).model_dump(),
+                first_message_preview=preview,
+            )
+        )
+    return summaries
 
 
 @router.get("/sessions/{session_id}", response_model=SessionDetailOut)

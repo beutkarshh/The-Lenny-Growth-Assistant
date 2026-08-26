@@ -372,3 +372,61 @@ Notable moments in this log worth pointing an evaluator to:
     but the same ballpark, and roughly double `llama3.2:3b`'s ~450-600
     throughout. Closed with the same rigor as the rest of this
     investigation, not left as a single favorable data point.
+- Phase 6, frontend: two real bugs, both caught only because the app was
+  actually driven in a real browser (Playwright + Chromium, installed for
+  this purpose) rather than just built and eyeballed.
+  - **A genuine session-switch race condition, not a test artifact.**
+    First live essay-flow test through the browser silently failed:
+    the "essay" request landed on a brand-new, empty session with no
+    prior grounded question, so `ship30_essay` correctly reported "not
+    enough grounded material" — but nothing on screen explained why.
+    Traced via direct DB inspection (not guessing from logs): clicking
+    "+ New session" for the essay test created a session server-side,
+    but the *grounded question* sent right after still landed in the
+    *previous* session, and only the *essay request* landed in the new
+    one. Root cause: `Composer`'s disabled check was `!session`, which
+    is already `false` while the previous session is still displayed —
+    nothing visibly changed, and nothing blocked input, during the
+    network round-trip `handleNewSession` needs to create and fetch the
+    new session. This is a real, reproducible window in production too
+    (any fast typist immediately after "New session"), not just a fast
+    test script. Fixed with an explicit `isSwitchingSession` state that
+    disables the composer and shows a "Loading session…" state for the
+    whole transition, per design.md Principle 3 ("never let the user
+    wonder what the system is doing").
+  - **The first fix attempt couldn't be verified — and that fact was
+    caught, not glossed over.** Re-running the same test after the
+    `isSwitchingSession` fix reproduced the *exact same* wrong-session
+    bug, byte-for-byte. Rather than assume the fix was wrong, added a
+    temporary debug attribute exposing the live session ID and
+    switching-state in the DOM and traced state at each step directly.
+    Finding: the browser was still running the **pre-fix** JavaScript —
+    the edited file was confirmed correct *inside* the running
+    container (`docker compose exec frontend cat ...`), but Vite's dev
+    server had never picked up the change at all (no HMR log line, not
+    even a failed one). Root cause: Docker Desktop's Windows bind mount
+    doesn't reliably forward filesystem change events into the Linux
+    container, so Vite's default file watcher silently misses edits.
+    Fixed with `server.watch.usePolling: true` in `vite.config.ts`
+    (documented inline with what was actually observed, not just "known
+    Docker issue" as a guess). After restarting the frontend container,
+    the debug trace showed the *correct* state transitions
+    (`switching=true` → new session ID different from the old one), and
+    the full essay flow then passed cleanly end-to-end with a
+    screenshot to prove it. Without the debug-attribute trace, this
+    could easily have been misdiagnosed as "the fix didn't work" rather
+    than "the fix was never actually served."
+  - **Scope correction, caught on review:** every browser verification in
+    this phase — all screenshots, both bug investigations, the final
+    end-to-end pass — ran with `LLM_PROVIDER=ollama` (no
+    `ANTHROPIC_API_KEY` configured, so that's the only provider `GET
+    /config` ever returned). The original Phase 6 summary described the
+    working flow without naming the provider, which read as broader than
+    what was actually tested. The Claude path has **zero** frontend
+    verification — not lightly tested, never exercised — beyond
+    `claude_provider.py` importing cleanly (Phase 4) and a UI badge
+    branch (`provider === "claude"`) that has never actually executed
+    against real data. Consistent with the Claude-path gap already
+    recorded in Phases 4-5, but worth restating here explicitly since a
+    frontend summary is exactly the kind of place an unqualified "it
+    works" claim could quietly imply more coverage than exists.

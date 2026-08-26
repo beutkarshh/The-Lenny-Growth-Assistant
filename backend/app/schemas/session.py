@@ -23,3 +23,12 @@ class SessionOut(BaseModel):
 
 class SessionDetailOut(SessionOut):
     messages: list[MessageOut] = []
+
+
+class SessionSummaryOut(SessionOut):
+    """Added Phase 6 for the session sidebar (design.md §2) — not in
+    architecture.md's original API table, which only defined single-session
+    create/fetch. first_message_preview lets the sidebar show something
+    meaningful without fetching every session's full message list."""
+
+    first_message_preview: str | None = None

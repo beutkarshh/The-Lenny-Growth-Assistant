@@ -78,6 +78,7 @@ This document covers the database schema, API surface, ingestion/retrieval flow,
 |---|---|---|
 | GET | `/health` | Liveness + dependency check (DB, active LLM provider reachability) |
 | POST | `/sessions` | Create a new session |
+| GET | `/sessions` | List sessions (id, created_at, llm_provider, first_message_preview), newest first — added Phase 6 for design.md §2's session sidebar; missing from the original table |
 | GET | `/sessions/{id}` | Fetch session + message history |
 | POST | `/sessions/{id}/messages` | Send a user message, receive assistant response (triggers agent routing) |
 | POST | `/sessions/{id}/artifacts` | Generate a Markdown/HTML artifact from current session context |
@@ -144,6 +145,8 @@ A fourth candidate, `qwen3:4b`, was also tested as due diligence before finalizi
 ## 7. Security: Artifact Rendering
 
 Generated HTML is treated as untrusted user-influenced content. It is rendered inside a **sandboxed iframe** (`sandbox` attribute with no `allow-same-origin` and no `allow-scripts` unless explicitly needed for an interactive artifact) combined with a **sanitization pass** (stripping `<script>`, inline event handlers, and external resource loads) before being written into the iframe's `srcdoc`. Markdown artifacts are rendered through a standard Markdown-to-safe-HTML pipeline with the same sanitization applied. The viewer explicitly does **not** permit arbitrary JavaScript execution against the parent page, network calls out of the sandbox, or access to cookies/localStorage of the main app.
+
+**Phase 6 implementation notes:** the project has no actual HTML-artifact-generating tool (only `ship30_essay`, which produces Markdown) — the frontend still implements the HTML/iframe path per the schema (`artifacts.type` supports `'html'`), using an **empty `sandbox` attribute** (maximum restriction: no scripts, no same-origin, nothing) since there's no legitimate interactive-artifact use case in this project's actual scope, plus a DOMPurify pass stripping `<script>`/`<iframe>`/`<object>`/`<embed>`/inline event handlers before writing to `srcdoc`. Markdown rendering uses `react-markdown` without the `rehype-raw` plugin — it renders its AST directly to React elements and never executes embedded raw HTML by default, which already satisfies "Markdown-to-safe-HTML with sanitization" without a separate DOMPurify pass on that path. Citation chips deep-link to `{episode_source_url}&t={seconds}` per §4, rather than a separate "expand source text" panel — no chunk-text-by-id endpoint exists, and the citation was already designed to point at the exact source moment.
 
 ---
 
