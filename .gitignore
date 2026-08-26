@@ -1,0 +1,21 @@
+# secrets / local env
+.env
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# node / frontend (Phase 6)
+node_modules/
+dist/
+.vite/
+
+# editor / os
+.vscode/
+.DS_Store
+
+# docker
+pgdata/
