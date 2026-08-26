@@ -18,7 +18,7 @@ export default function Composer({ disabled, onSend }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 border-t border-slate-200 bg-white p-3">
+    <form onSubmit={handleSubmit} className="flex gap-2 border-t border-slate-200 bg-white p-4">
       <label htmlFor="composer-input" className="sr-only">
         Message
       </label>
@@ -29,12 +29,12 @@ export default function Composer({ disabled, onSend }: Props) {
         onChange={(e) => setValue(e.target.value)}
         disabled={disabled}
         placeholder="Ask about growth or product strategy from Lenny's Podcast..."
-        className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-50 disabled:text-slate-400"
+        className="flex-1 rounded-md border border-slate-300 px-3.5 py-2.5 text-sm disabled:bg-slate-50 disabled:text-slate-400"
       />
       <button
         type="submit"
         disabled={disabled || !value.trim()}
-        className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+        className="rounded-md bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-300"
       >
         Send
       </button>

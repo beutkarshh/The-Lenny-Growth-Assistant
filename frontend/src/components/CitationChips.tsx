@@ -19,7 +19,7 @@ export default function CitationChips({ citations }: { citations: Citation[] }) 
           href={`${citation.episode_source_url}&t=${timestampToSeconds(citation.start_timestamp)}`}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100"
+          className="inline-flex items-center gap-1 rounded-full border border-brand-200 bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100"
           title={`Jump to ${citation.start_timestamp} in the source episode`}
         >
           🔗 {citation.episode_title} · {citation.start_timestamp}

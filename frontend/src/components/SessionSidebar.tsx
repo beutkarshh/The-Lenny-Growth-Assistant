@@ -22,7 +22,7 @@ export default function SessionSidebar({
         <button
           type="button"
           onClick={onNewSession}
-          className="w-full rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="w-full rounded-md bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-700"
         >
           + New session
         </button>
@@ -38,7 +38,9 @@ export default function SessionSidebar({
               onClick={() => onSelectSession(session.id)}
               aria-current={session.id === activeSessionId ? "true" : undefined}
               className={`block w-full border-b border-slate-100 px-3 py-3 text-left text-sm hover:bg-slate-50 ${
-                session.id === activeSessionId ? "bg-blue-50" : ""
+                session.id === activeSessionId
+                  ? "border-l-2 border-l-brand-600 bg-brand-50"
+                  : "border-l-2 border-l-transparent"
               }`}
             >
               <div className="truncate font-medium text-slate-700">

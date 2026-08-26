@@ -138,7 +138,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 text-slate-900">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#f7f7fb] text-slate-900">
       <SessionSidebar
         sessions={sessions}
         activeSessionId={activeSession?.id ?? null}

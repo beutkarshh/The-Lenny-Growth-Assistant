@@ -30,16 +30,31 @@ export default function ChatPanel({
 
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-2.5">
-        <h1 className="text-sm font-semibold text-slate-800">The Lenny Growth Assistant</h1>
+      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-3">
+        <div className="flex items-center gap-2.5">
+          <span
+            aria-hidden="true"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-sm font-bold text-white"
+          >
+            L
+          </span>
+          <div>
+            <h1 className="text-sm font-semibold leading-tight text-slate-800">
+              The Lenny Growth Assistant
+            </h1>
+            <p className="text-xs leading-tight text-slate-400">
+              Grounded answers from Lenny's Podcast
+            </p>
+          </div>
+        </div>
         {provider && (
           <span
-            className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600"
+            className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100/80 px-2.5 py-1 text-xs font-medium text-slate-600"
             title="Active model provider"
           >
             <span
               aria-hidden="true"
-              className={`h-1.5 w-1.5 rounded-full ${provider === "claude" ? "bg-purple-500" : "bg-green-500"}`}
+              className={`h-1.5 w-1.5 rounded-full ${provider === "claude" ? "bg-purple-500" : "bg-emerald-500"}`}
             />
             {provider === "claude" ? "Claude (cloud)" : "Ollama (local)"}
           </span>
@@ -65,13 +80,13 @@ export default function ChatPanel({
           </div>
         )}
         {!isSwitchingSession && session && (
-          <div className="mx-auto flex max-w-3xl flex-col gap-3">
+          <div className="mx-auto flex max-w-3xl flex-col gap-4">
             {session.messages.map((message) => (
               <MessageBubble key={message.id} message={message} onOpenArtifact={onOpenArtifact} />
             ))}
             {isAwaitingReply && (
               <div className="flex justify-start">
-                <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm bg-white px-4 py-2.5 text-sm text-slate-400 shadow-sm ring-1 ring-slate-200">
+                <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm bg-white px-4 py-3 text-sm text-slate-400 shadow-sm ring-1 ring-slate-200">
                   <span className="animate-pulse">
                     {isAwaitingEssay ? "Writing your essay…" : "Thinking…"}
                   </span>

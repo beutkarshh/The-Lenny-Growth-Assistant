@@ -21,7 +21,7 @@ export default function MessageBubble({ message, onOpenArtifact }: Props) {
   if (isUser) {
     return (
       <div className="flex justify-end">
-        <div className="max-w-2xl whitespace-pre-wrap rounded-2xl rounded-br-sm bg-blue-600 px-4 py-2.5 text-sm text-white">
+        <div className="max-w-2xl whitespace-pre-wrap rounded-2xl rounded-br-sm bg-brand-600 px-4 py-3 text-sm text-white">
           {message.content}
         </div>
       </div>
@@ -31,7 +31,7 @@ export default function MessageBubble({ message, onOpenArtifact }: Props) {
   return (
     <div className="flex justify-start">
       <div
-        className={`max-w-2xl rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm ${
+        className={`max-w-2xl rounded-2xl rounded-bl-sm px-4 py-3 text-sm ${
           isFallback
             ? "border border-dashed border-slate-300 bg-slate-100 text-slate-600"
             : "bg-white text-slate-800 shadow-sm ring-1 ring-slate-200"
