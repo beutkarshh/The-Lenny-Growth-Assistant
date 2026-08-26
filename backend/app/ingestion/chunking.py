@@ -10,7 +10,14 @@ import yaml
 # Timestamp format varies across the corpus: episodes under an hour are
 # stamped "MM:SS" (e.g. "Barbra Gago (00:00):"), longer ones "HH:MM:SS".
 # The hours group is optional to handle both; missing hours are treated as 0.
-TURN_MARKER = re.compile(r"^(?:.+?\s+)?\((?:(\d{1,2}):)?(\d{2}):(\d{2})\):\s*$", re.MULTILINE)
+#
+# The speaker-name prefix uses [ \t]+ (not \s+) before the timestamp: \s
+# matches newlines too, so with \s+ a single-line turn immediately followed
+# by a blank line before the next marker would have its entire dialogue
+# silently swallowed as a fake "speaker name" for that next marker — a real
+# bug caught by a unit test in Phase 8, not by the Phase 2 production
+# ingestion smoke tests (see agent-transcripts/README.md).
+TURN_MARKER = re.compile(r"^(?:.+?[ \t]+)?\((?:(\d{1,2}):)?(\d{2}):(\d{2})\):[ \t]*$", re.MULTILINE)
 
 # architecture.md §4 specifies "~500-800 token chunks with slight overlap".
 # Approximated in words (~0.75 words per token) rather than pulling in a real

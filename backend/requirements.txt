@@ -7,3 +7,5 @@ pgvector==0.3.6
 pyyaml==6.0.2
 httpx==0.27.2
 anthropic==1.0.0
+pytest==8.3.3
+pytest-mock==3.14.0
